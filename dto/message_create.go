@@ -34,7 +34,7 @@ const (
 )
 
 // GroupMessageToCreate 消息类型： 0 是文本，1 图文混排，2  markdown， 3 ark，4 embed 7 富媒体
-type GroupMessageToCreate C2CMessageToCreate
+type GroupMessageToCreate = C2CMessageToCreate
 
 // C2CMessageToCreate 创建人人、群消息的结构体定义
 type C2CMessageToCreate struct {
@@ -56,7 +56,7 @@ type FileInfo struct {
 }
 
 // GroupRichMediaMessageToCreate 媒体类型：1 图片，2 视频，3 语音，4 文件（暂不开放） 资源格式要求： 图片：png/jpg，视频：mp4，语音：silk，
-type GroupRichMediaMessageToCreate C2CRichMediaMessageToCreate
+type GroupRichMediaMessageToCreate = C2CRichMediaMessageToCreate
 
 // C2CRichMediaMessageToCreate 媒体类型：1 图片，2 视频，3 语音，4 文件（暂不开放） 资源格式要求： 图片：png/jpg，视频：mp4，语音：silk，
 type C2CRichMediaMessageToCreate struct {
@@ -104,7 +104,7 @@ type RichMediaMsgResp struct {
 	Ttl      uint   `json:"ttl,omitempty"`
 }
 
-type GroupMsgResp C2CMsgResp
+type GroupMsgResp = C2CMsgResp
 
 type C2CMsgResp struct {
 	Id        string    `json:"id"`
