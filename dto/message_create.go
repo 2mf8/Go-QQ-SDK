@@ -16,31 +16,37 @@ type MessageToCreate struct {
 	EventID          string                    `json:"event_id,omitempty"` // 要回复的事件id, 逻辑同MsgID
 }
 
-// 消息类型： 0 是文本，1 图文混排，2  markdown， 3 ark，4 embed 7 富媒体
-type GroupMessageToCreate struct {
-	Content          string                    `json:"content,omitempty"`
-	MsgType          int                       `json:"msg_type"`
-	Markdown         *Markdown                 `json:"markdown,omitempty"`
-	Keyboard         *keyboard.MessageKeyboard `json:"keyboard,omitempty"` // 消息按钮组件
-	Media            *FileInfo                 `json:"media,omitempty"`
-	Ark              *Ark                      `json:"ark,omitempty"`
-	Image            string                    `json:"image,omitempty"`
-	MessageReference *MessageReference         `json:"message_reference,omitempty"`
-	EventID          string                    `json:"event_id,omitempty"` // 要回复的事件id, 逻辑同MsgID
-	MsgID            string                    `json:"msg_id,omitempty"`
-	MsgReq           uint                      `json:"msg_req,omitempty"`
-}
+type C2CMsgType uint8
 
+const (
+	// C2CMsgTypeText 文本
+	C2CMsgTypeText C2CMsgType = iota
+	// C2CMsgTypeTextPic 图文混排
+	C2CMsgTypeTextPic
+	// C2CMsgTypeMarkdown markdown
+	C2CMsgTypeMarkdown
+	// C2CMsgTypeArk ark
+	C2CMsgTypeArk
+	// C2CMsgTypeEmbed embed
+	C2CMsgTypeEmbed
+	// C2CMsgTypeMedia media
+	C2CMsgTypeMedia C2CMsgType = 7
+)
+
+// GroupMessageToCreate 消息类型： 0 是文本，1 图文混排，2  markdown， 3 ark，4 embed 7 富媒体
+type GroupMessageToCreate C2CMessageToCreate
+
+// C2CMessageToCreate 创建人人、群消息的结构体定义
 type C2CMessageToCreate struct {
 	Content          string                    `json:"content,omitempty"`
-	MsgType          int                       `json:"msg_type"`
+	MsgType          C2CMsgType                `json:"msg_type"`
 	Markdown         *Markdown                 `json:"markdown,omitempty"`
 	Keyboard         *keyboard.MessageKeyboard `json:"keyboard,omitempty"` // 消息按钮组件
 	Media            *FileInfo                 `json:"media,omitempty"`
 	Ark              *Ark                      `json:"ark,omitempty"`
 	Image            string                    `json:"image,omitempty"`
 	MessageReference *MessageReference         `json:"message_reference,omitempty"`
-	EventID          string                    `json:"event_id,omitempty"` // 要回复的事件id, 逻辑同MsgID
+	EventID          EventType                 `json:"event_id,omitempty"` // 要回复的事件id, 逻辑同MsgID
 	MsgID            string                    `json:"msg_id,omitempty"`
 	MsgReq           uint                      `json:"msg_req,omitempty"`
 }
@@ -49,22 +55,16 @@ type FileInfo struct {
 	FileInfo string `json:"file_info,omitempty"`
 }
 
-// 媒体类型：1 图片，2 视频，3 语音，4 文件（暂不开放） 资源格式要求： 图片：png/jpg，视频：mp4，语音：silk，
-type GroupRichMediaMessageToCreate struct {
-	FileType   int    `json:"file_type"`
-	Url        string `json:"url"`
-	SrvSendMsg bool   `json:"srv_send_msg"`
-	FileData   []byte `json:"file_data"`
-}
+// GroupRichMediaMessageToCreate 媒体类型：1 图片，2 视频，3 语音，4 文件（暂不开放） 资源格式要求： 图片：png/jpg，视频：mp4，语音：silk，
+type GroupRichMediaMessageToCreate C2CRichMediaMessageToCreate
 
-// 媒体类型：1 图片，2 视频，3 语音，4 文件（暂不开放） 资源格式要求： 图片：png/jpg，视频：mp4，语音：silk，
+// C2CRichMediaMessageToCreate 媒体类型：1 图片，2 视频，3 语音，4 文件（暂不开放） 资源格式要求： 图片：png/jpg，视频：mp4，语音：silk，
 type C2CRichMediaMessageToCreate struct {
 	FileType   int    `json:"file_type"`
 	Url        string `json:"url"`
 	SrvSendMsg bool   `json:"srv_send_msg"`
 	FileData   []byte `json:"file_data"`
 }
-
 
 // MessageReference 引用消息
 type MessageReference struct {
@@ -104,12 +104,9 @@ type RichMediaMsgResp struct {
 	Ttl      uint   `json:"ttl,omitempty"`
 }
 
-type GroupMsgResp struct {
-	Id        string    `json:"id"`
-	Timestamp Timestamp `json:"timestamp"`
-}
+type GroupMsgResp C2CMsgResp
 
-type C2CMsgResp struct{
+type C2CMsgResp struct {
 	Id        string    `json:"id"`
 	Timestamp Timestamp `json:"timestamp"`
 }
