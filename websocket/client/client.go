@@ -4,15 +4,19 @@ package client
 import (
 	"encoding/json"
 	"fmt"
+	"net/http"
+	"net/url"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
 
 	wss "github.com/gorilla/websocket" // 是一个流行的 websocket 客户端，服务端实现
+
 	"github.com/2mf8/Go-QQ-Client/dto"
 	"github.com/2mf8/Go-QQ-Client/errs"
 	"github.com/2mf8/Go-QQ-Client/event"
+	"github.com/2mf8/Go-QQ-Client/internal/proxy"
 	"github.com/2mf8/Go-QQ-Client/log"
 	"github.com/2mf8/Go-QQ-Client/websocket"
 )
@@ -23,12 +27,17 @@ const DefaultHandleSize = 1000
 
 // Setup 依赖注册
 func Setup() {
-	websocket.Register(&Client{})
+	dialer := wss.DefaultDialer
+	dialer.Proxy = func(req *http.Request) (*url.URL, error) {
+		return proxy.Proxy(req)
+	}
+	websocket.Register(&Client{dialer: dialer})
 }
 
 // New 新建一个连接对象
 func (c *Client) New(session dto.Session) websocket.WebSocket {
 	return &Client{
+		dialer:            c.dialer,
 		messageQueue:      make(messageChan, DefaultQueueSize),
 		session:           &session,
 		closeChan:         make(closeErrorChan, 10),
@@ -40,6 +49,7 @@ func (c *Client) New(session dto.Session) websocket.WebSocket {
 // Client websocket 连接客户端
 type Client struct {
 	version           int
+	dialer            *wss.Dialer
 	conn              *wss.Conn
 	messageQueue      messageChan
 	session           *dto.Session
@@ -59,7 +69,7 @@ func (c *Client) Connect() error {
 	}
 
 	var err error
-	c.conn, _, err = wss.DefaultDialer.Dial(c.session.URL, nil)
+	c.conn, _, err = c.dialer.Dial(c.session.URL, nil)
 	if err != nil {
 		log.Errorf("%s, connect err: %v", c.session, err)
 		return err

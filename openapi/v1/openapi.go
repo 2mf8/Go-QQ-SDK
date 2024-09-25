@@ -10,7 +10,9 @@ import (
 	"time"
 
 	"github.com/go-resty/resty/v2" // resty 是一个优秀的 rest api 客户端，可以极大的减少开发基于 rest 标准接口求请求的封装工作量
+
 	"github.com/2mf8/Go-QQ-Client/errs"
+	"github.com/2mf8/Go-QQ-Client/internal/proxy"
 	"github.com/2mf8/Go-QQ-Client/log"
 	"github.com/2mf8/Go-QQ-Client/openapi"
 	"github.com/2mf8/Go-QQ-Client/token"
@@ -134,7 +136,7 @@ func createTransport(localAddr net.Addr, idleConns int) *http.Transport {
 		dialer.LocalAddr = localAddr
 	}
 	return &http.Transport{
-		Proxy:                 http.ProxyFromEnvironment,
+		Proxy:                 proxy.Proxy,
 		DialContext:           dialer.DialContext,
 		ForceAttemptHTTP2:     true,
 		MaxIdleConns:          idleConns,
