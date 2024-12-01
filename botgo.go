@@ -1,23 +1,16 @@
 // Package botgo 是一个QQ频道机器人 sdk 的 golang 实现
-package bot
+package main
 
 import (
 	"github.com/2mf8/Go-QQ-Client/errs"
 	"github.com/2mf8/Go-QQ-Client/log"
 	"github.com/2mf8/Go-QQ-Client/openapi"
-	v1 "github.com/2mf8/Go-QQ-Client/openapi/v1"
 	"github.com/2mf8/Go-QQ-Client/token"
-	"github.com/2mf8/Go-QQ-Client/websocket/client"
+	v1 "github.com/2mf8/Go-QQ-Client/openapi/v1"
 )
 
 func init() {
-	v1.Setup()     // 注册 v1 接口
-	client.Setup() // 注册 websocket client 实现
-}
-
-// NewSessionManager 获得 session manager 实例
-func NewSessionManager() SessionManager {
-	return defaultSessionManager
+	v1.Setup() // 注册 v1 接口
 }
 
 // SelectOpenAPIVersion 指定使用哪个版本的 api 实现，如果不指定，sdk将默认使用第一个 setup 的 api 实现

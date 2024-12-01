@@ -1,7 +1,13 @@
 package v1
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
+	"io"
+	"net/http"
+
+	"github.com/2mf8/Go-QQ-Client/dto"
 )
 
 const domain = "api.sgroup.qq.com"
@@ -97,4 +103,23 @@ func (o *openAPI) getURL(endpoint uri) string {
 func (o *openAPI) getQQURL(endpoint uri) string {
 	d := getAppAccessTokenDomain
 	return fmt.Sprintf("%s://%s%s", scheme, d, endpoint)
+}
+
+func GetAccessToken(appId uint64, clientsecret string) {
+	d := getAppAccessTokenDomain
+	url := fmt.Sprintf("%s://%s%s", scheme, d, getAppAccessTokenUri)
+	req := dto.GetAccessTokenReq{
+		AppId:        appId,
+		ClientSecret: clientsecret,
+	}
+	b, err := json.Marshal(req)
+	if err == nil {
+		resp, err := http.Post(url, "application/json", bytes.NewBuffer(b))
+		if err == nil {
+			defer resp.Body.Close()
+			body, _ := io.ReadAll(resp.Body)
+			fmt.Println(string(body))
+		}
+	}
+
 }
