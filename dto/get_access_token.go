@@ -1,8 +1,8 @@
 package dto
 
 type GetAccessTokenReq struct {
-	AppId        uint64 `json"appId,omitempty"`
-	ClientSecret string `json"clientSecret,omitempty"`
+	AppID        string `json:"appId,omitempty"`
+	ClientSecret string `json:"clientSecret,omitempty"`
 }
 
 type GetAccessTokenResp struct {

@@ -105,21 +105,22 @@ func (o *openAPI) getQQURL(endpoint uri) string {
 	return fmt.Sprintf("%s://%s%s", scheme, d, endpoint)
 }
 
-func GetAccessToken(appId uint64, clientsecret string) {
+func GetAccessToken(appId string, clientsecret string) *dto.GetAccessTokenResp{
 	d := getAppAccessTokenDomain
-	url := fmt.Sprintf("%s://%s%s", scheme, d, getAppAccessTokenUri)
-	req := dto.GetAccessTokenReq{
-		AppId:        appId,
+	url := fmt.Sprintf("%s%s", d, getAppAccessTokenUri)
+	req := &dto.GetAccessTokenReq{
+		AppID:        appId,
 		ClientSecret: clientsecret,
 	}
+	_resp := &dto.GetAccessTokenResp{}
 	b, err := json.Marshal(req)
 	if err == nil {
 		resp, err := http.Post(url, "application/json", bytes.NewBuffer(b))
 		if err == nil {
 			defer resp.Body.Close()
 			body, _ := io.ReadAll(resp.Body)
-			fmt.Println(string(body))
+			json.Unmarshal(body, _resp)
 		}
 	}
-
+	return _resp
 }
