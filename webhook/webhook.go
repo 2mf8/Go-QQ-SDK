@@ -340,4 +340,32 @@ func (bot *Bot) ParseWHData(p *dto.WSPayload, message []byte) {
 			GroupAddRobotEventHandle(p, gar)
 		}
 	}
+	if p.Type == dto.EventGroupDelRobbot {
+		gdr := &dto.WSGroupDelRobotData{}
+		err := json.Unmarshal(message, gdr)
+		if err == nil {
+			GroupDelRobotEventHandle(p, gdr)
+		}
+	}
+	if p.Type == dto.EventGroupMsgReceive{
+		gmr := &dto.WSGroupMsgReceiveData{}
+		err := json.Unmarshal(message, gmr)
+		if err == nil {
+			GroupMsgReceiveEventHandle(p, gmr)
+		}
+	}
+	if p.Type == dto.EventGroupMsgReject{
+		gmr := &dto.WSGroupMsgRejectData{}
+		err := json.Unmarshal(message, gmr)
+		if err == nil {
+			GroupMsgRejectEventHandle(p, gmr)
+		}
+	}
+	if p.Type == dto.EventC2CMessageCreate{
+		cmc := &dto.WSC2CMessageData{}
+		err := json.Unmarshal(message, cmc)
+		if err == nil {
+			C2CMessageEventHandler(p, cmc)
+		}
+	}
 }
