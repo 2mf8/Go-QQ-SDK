@@ -228,15 +228,15 @@ func RunGin(engine *gin.Engine, port string) (string, error) {
 	}
 	_, randPort, _ := net.SplitHostPort(ln.Addr().String())
 	go func() {
-		/* if AllSetting.CertFile == "" || AllSetting.CertKey == "" { */
+		if AllSetting.CertFile == "" || AllSetting.CertKey == "" {
 		if err := http.Serve(ln, engine); err != nil {
 			FatalError(fmt.Errorf("failed to serve http, err: %+v", err))
 		}
-		/* }else{
+		}else{
 			if err := http.ServeTLS(ln, engine, AllSetting.CertFile, AllSetting.CertKey); err != nil {
 				FatalError(fmt.Errorf("failed to serve http, err: %+v", err))
 			}
-		} */
+		}
 	}()
 	return randPort, nil
 }
