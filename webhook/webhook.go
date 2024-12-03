@@ -229,10 +229,10 @@ func RunGin(engine *gin.Engine, port string) (string, error) {
 	_, randPort, _ := net.SplitHostPort(ln.Addr().String())
 	go func() {
 		if AllSetting.CertFile == "" || AllSetting.CertKey == "" {
-		if err := http.Serve(ln, engine); err != nil {
-			FatalError(fmt.Errorf("failed to serve http, err: %+v", err))
-		}
-		}else{
+			if err := http.Serve(ln, engine); err != nil {
+				FatalError(fmt.Errorf("failed to serve http, err: %+v", err))
+			}
+		} else {
 			if err := http.ServeTLS(ln, engine, AllSetting.CertFile, AllSetting.CertKey); err != nil {
 				FatalError(fmt.Errorf("failed to serve http, err: %+v", err))
 			}
@@ -347,25 +347,123 @@ func (bot *Bot) ParseWHData(p *dto.WSPayload, message []byte) {
 			GroupDelRobotEventHandle(p, gdr)
 		}
 	}
-	if p.Type == dto.EventGroupMsgReceive{
+	if p.Type == dto.EventGroupMsgReceive {
 		gmr := &dto.WSGroupMsgReceiveData{}
 		err := json.Unmarshal(message, gmr)
 		if err == nil {
 			GroupMsgReceiveEventHandle(p, gmr)
 		}
 	}
-	if p.Type == dto.EventGroupMsgReject{
+	if p.Type == dto.EventGroupMsgReject {
 		gmr := &dto.WSGroupMsgRejectData{}
 		err := json.Unmarshal(message, gmr)
 		if err == nil {
 			GroupMsgRejectEventHandle(p, gmr)
 		}
 	}
-	if p.Type == dto.EventC2CMessageCreate{
+	if p.Type == dto.EventC2CMessageCreate {
 		cmc := &dto.WSC2CMessageData{}
 		err := json.Unmarshal(message, cmc)
 		if err == nil {
 			C2CMessageEventHandler(p, cmc)
+		}
+	}
+	if p.Type == dto.EventC2CMsgReceive {
+		fmr := &dto.WSFriendMsgReveiceData{}
+		err := json.Unmarshal(message, fmr)
+		if err == nil {
+			C2CMsgReceiveHandle(p, fmr)
+		}
+	}
+	if p.Type == dto.EventC2CMsgReject {
+		fmr := &dto.WSFriendMsgRejectData{}
+		err := json.Unmarshal(message, fmr)
+		if err == nil {
+			C2CMsgRejectHandle(p, fmr)
+		}
+	}
+	if p.Type == dto.EventFriendAdd {
+		fad := &dto.WSFriendAddData{}
+		err := json.Unmarshal(message, fad)
+		if err == nil {
+			FriendAddEventHandle(p, fad)
+		}
+	}
+	if p.Type == dto.EventFriendDel {
+		fad := &dto.WSFriendDelData{}
+		err := json.Unmarshal(message, fad)
+		if err == nil {
+			FriendDelEventHandle(p, fad)
+		}
+	}
+	if p.Type == dto.EventAtMessageCreate {
+		am := &dto.WSATMessageData{}
+		err := json.Unmarshal(message, am)
+		if err == nil {
+			ATMessageEventHandler(p, am)
+		}
+	}
+	if p.Type == dto.EventMessageCreate {
+		m := &dto.WSMessageData{}
+		err := json.Unmarshal(message, m)
+		if err == nil {
+			MessageEventHandler(p, m)
+		}
+	}
+	if p.Type == dto.EventInteractionCreate {
+		i := &dto.WSInteractionData{}
+		err := json.Unmarshal(message, i)
+		if err == nil {
+			InteractionEventHandler(p, i)
+		}
+	}
+	if p.Type == dto.EventDirectMessageCreate {
+		i := &dto.WSDirectMessageData{}
+		err := json.Unmarshal(message, i)
+		if err == nil {
+			DirectMessageEventHandler(p, i)
+		}
+	}
+	if p.Type == dto.EventMessageReactionAdd || p.Type == dto.EventMessageReactionRemove {
+		mr := &dto.WSMessageReactionData{}
+		err := json.Unmarshal(message, mr)
+		if err == nil {
+			MessageReactionEventHandler(p, mr)
+		}
+	}
+	if p.Type == dto.EventMessageAuditPass || p.Type == dto.EventMessageAuditReject {
+		mr := &dto.WSMessageAuditData{}
+		err := json.Unmarshal(message, mr)
+		if err == nil {
+			MessageAuditEventHandler(p, mr)
+		}
+	}
+	if p.Type == dto.EventForumThreadCreate || p.Type == dto.EventForumPostCreate ||  p.Type == dto.EventForumReplyCreate || p.Type == dto.EventForumThreadUpdate || p.Type == dto.EventForumPostDelete || p.Type == dto.EventForumThreadDelete || p.Type == dto.EventForumReplyDelete {
+		ft := &dto.WSForumAuditData{}
+		err := json.Unmarshal(message, ft)
+		if err == nil {
+			ForumAuditEventHandler(p, ft)
+		}
+	}
+	if p.Type == dto.EventGuildCreate || p.Type == dto.EventGuildUpdate || p.Type == dto.EventGuildDelete {
+		g := &dto.WSGuildData{}
+		err := json.Unmarshal(message, g)
+		if err == nil {
+			GuildEventHandler(p, g)
+		}
+	}
+	if p.Type == dto.EventChannelCreate || p.Type == dto.EventChannelUpdate || p.Type == dto.EventChannelDelete {
+		c := &dto.WSChannelData{}
+		err := json.Unmarshal(message, c)
+		if err == nil {
+			ChannelEventHandler(p, c)
+		}
+	}
+	if p.Type == dto.EventGuildMemberAdd || p.Type == dto.EventGuildMemberUpdate || p.Type == dto.EventGuildMemberRemove {
+		gm := &dto.WSGuildMemberData{}
+		err := json.Unmarshal(message, gm)
+		if err == nil {
+			GuildMemberEventHandler(p, gm)
 		}
 	}
 }
