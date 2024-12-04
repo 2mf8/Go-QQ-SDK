@@ -36,86 +36,14 @@ var (
 		"443":  ":443",
 		"8443": ":8443",
 	}
+	FirstStart bool = true
 )
 
-// WSGuildData 频道 payload
-var WHGuildData = &dto.Guild{}
-
-// WSGuildMemberData 频道成员 payload
-var WHGuildMemberData = &dto.Member{}
-
-// WSChannelData 子频道 payload
-var WHChannelData = &dto.Channel{}
-
-// WSMessageData 消息 payload
-var WHMessageData = &dto.Message{}
-
-// WSATMessageData only at 机器人的消息 payload
-var WHATMessageData = &dto.Message{}
-
-// WSDirectMessageData 私信消息 payload
-var WHDirectMessageData = &dto.Message{}
-
-var WHC2CMessageData = &dto.C2CMessage{}
-
-var WHGroupATMessageData = &dto.GroupMessage{}
-
-var WHGroupMessageData = &dto.GroupMessage{}
-
-// WSMessageDeleteData 消息 payload
-var WHMessageDeleteData = &dto.MessageDelete{}
-
-// WSPublicMessageDeleteData 公域机器人的消息删除 payload
-var WHPublicMessageDeleteData = &dto.MessageDelete{}
-
-// WSDirectMessageDeleteData 私信消息 payload
-var WHDirectMessageDeleteData = &dto.MessageDelete{}
-
-// WSAudioData 音频机器人的音频流事件
-var WHAudioData = &dto.AudioAction{}
-
-// WSMessageReactionData 表情表态事件
-var WHMessageReactionData = &dto.MessageReaction{}
-
-// WSMessageAuditData 消息审核事件
-var WHMessageAuditData = &dto.MessageAudit{}
-
-// WSThreadData 主题事件
-var WHThreadData = &dto.Thread{}
-
-// WSPostData 帖子事件
-var WHPostData = &dto.Post{}
-
-// WSReplyData 帖子回复事件
-var WHReplyData = &dto.Reply{}
-
-// WSForumAuditData 帖子审核事件
-var WHForumAuditData = &dto.ForumAuditResult{}
-
-// WSInteractionData 互动事件
-var WHInteractionData = &dto.Interaction{}
-
-var WHGroupAddRobotData = &dto.GroupAddRobotEvent{}
-
-var WHGroupDelRobotData = &dto.GroupDelRobotEvent{}
-
-var WHGroupMsgRejectData = &dto.GroupMsgRejectEvent{}
-
-var WHGroupMsgReceiveData = &dto.GroupMsgReceiveEvent{}
-
-var WHFriendAddData = &dto.FriendAddEvent{}
-
-var WHFriendDelData = &dto.FriendDelEvent{}
-
-var WHFriendMsgRejectData = &dto.FriendMsgRejectEvent{}
-
-var WHFriendMsgReveiceData = &dto.FriendMsgReceiveEvent{}
-
-var Bots = make(map[int64]*Bot)
+var Bots = make(map[string]*Bot)
 
 type Bot struct {
 	QQ        uint64
-	AppId     uint64
+	AppId     string
 	Token     string
 	AppSecret string
 	Openapi   openapi.OpenAPI
@@ -125,6 +53,18 @@ type Bot struct {
 
 	Payload *dto.WSPayload
 }
+
+type BotHeaderInfo struct {
+	ContentLength       []string `json:"Content-Length,omitempty"`
+	ContentType         []string `json:"Content-Type,omitempty"`
+	UserAgent           []string `json:"User-Agent,omitempty"`
+	XBotAppid           []string `json:"X-Bot-Appid,omitempty"`
+	XSignatureEd25519   []string `json:"X-Signature-Ed25519,omitempty"`
+	XSignatureMethod    []string `json:"X-Signature-Method,omitempty"`
+	XSignatureTimestamp []string `json:"X-Signature-Timestamp,omitempty"`
+	XTpsTraceId         []string `json:"X-Tps-Trace-Id,omitempty"`
+}
+
 type ValidationRequest struct {
 	PlainToken string `json:"plain_token,omitempty"`
 	EventTs    string `json:"event_ts,omitempty"`
@@ -136,8 +76,15 @@ type ValidationResponse struct {
 }
 
 func handleValidation(c *gin.Context) {
+	appid := c.Param("appid")
+	//if appid == "" {} else {}
+	fmt.Println(appid)
+	header := &BotHeaderInfo{}
+	h, _ := json.Marshal(c.Request.Header)
+	json.Unmarshal(h, header)
+	fmt.Println("Header信息：", string(h))
 	httpBody, err := io.ReadAll(c.Request.Body)
-	fmt.Println(string(httpBody))
+	fmt.Println("Body信息：", string(httpBody))
 	if err != nil {
 		log.Println("read http body err", err)
 		return
@@ -149,12 +96,16 @@ func handleValidation(c *gin.Context) {
 	}
 	validationPayload := &ValidationRequest{}
 	b, _ := json.Marshal(payload.Data)
-	NewBot(payload, b, AllSetting.AppId)
+	if FirstStart {
+		NewBot(header, payload, b, header.XBotAppid[0])
+		FirstStart = false
+	}
+	NewBot(header, payload, b, header.XBotAppid[0])
 	if err = json.Unmarshal(b, validationPayload); err != nil {
 		log.Println("parse http payload failed:", err)
 		return
 	}
-	seed := AllSetting.AppSecret
+	seed := AllSetting.Apps[appid].AppSecret
 	for len(seed) < ed25519.SeedSize {
 		seed = strings.Repeat(seed, 2)
 	}
@@ -195,7 +146,7 @@ func InitGin() {
 	router.GET("/", func(ctx *gin.Context) {
 		ctx.String(http.StatusOK, "it works")
 	})
-	router.POST("/qqbot", handleValidation)
+	router.POST("/qqbot/:appid", handleValidation)
 
 	iport := strconv.FormatInt(int64(AllSetting.Port), 10)
 	realPort, err := RunGin(router, ":"+iport)
@@ -304,19 +255,19 @@ func Return(c *gin.Context, resp proto.Message) {
 	c.Data(http.StatusOK, c.ContentType(), data)
 }
 
-func NewBot(p *dto.WSPayload, m []byte, appId uint64) *Bot {
+func NewBot(h *BotHeaderInfo, p *dto.WSPayload, m []byte, appId string) *Bot {
 	as := ReadSetting()
-	ibot, ok := Bots[int64(appId)]
+	ibot, ok := Bots[appId]
 	if ok {
-		ibot.ParseWHData(p, m)
+		ibot.ParseWHData(h, p, m)
 	}
 	bot := &Bot{
-		AppId:     as.AppId,
-		Token:     as.Token,
-		AppSecret: as.AppSecret,
+		AppId:     appId,
+		Token:     as.Apps[appId].Token,
+		AppSecret: as.Apps[appId].AppSecret,
 		Payload:   p,
 	}
-	Bots[int64(bot.AppId)] = bot
+	Bots[bot.AppId] = bot
 	return bot
 }
 
@@ -325,145 +276,145 @@ func (bot *Bot) AddOpenapi(iOpenapi openapi.OpenAPI) *Bot {
 	return bot
 }
 
-func (bot *Bot) ParseWHData(p *dto.WSPayload, message []byte) {
+func (bot *Bot) ParseWHData(h *BotHeaderInfo, p *dto.WSPayload, message []byte) {
 	if p.Type == dto.EventGroupATMessageCreate {
 		gm := &dto.WSGroupATMessageData{}
 		err := json.Unmarshal(message, gm)
 		if err == nil {
-			GroupAtMessageEventHandler(p, gm)
+			GroupAtMessageEventHandler(h, p, gm)
 		}
 	}
 	if p.Type == dto.EventGroupAddRobbot {
 		gar := &dto.WSGroupAddRobotData{}
 		err := json.Unmarshal(message, gar)
 		if err == nil {
-			GroupAddRobotEventHandle(p, gar)
+			GroupAddRobotEventHandler(h, p, gar)
 		}
 	}
 	if p.Type == dto.EventGroupDelRobbot {
 		gdr := &dto.WSGroupDelRobotData{}
 		err := json.Unmarshal(message, gdr)
 		if err == nil {
-			GroupDelRobotEventHandle(p, gdr)
+			GroupDelRobotEventHandler(h, p, gdr)
 		}
 	}
 	if p.Type == dto.EventGroupMsgReceive {
 		gmr := &dto.WSGroupMsgReceiveData{}
 		err := json.Unmarshal(message, gmr)
 		if err == nil {
-			GroupMsgReceiveEventHandle(p, gmr)
+			GroupMsgReceiveEventHandler(h, p, gmr)
 		}
 	}
 	if p.Type == dto.EventGroupMsgReject {
 		gmr := &dto.WSGroupMsgRejectData{}
 		err := json.Unmarshal(message, gmr)
 		if err == nil {
-			GroupMsgRejectEventHandle(p, gmr)
+			GroupMsgRejectEventHandler(h, p, gmr)
 		}
 	}
 	if p.Type == dto.EventC2CMessageCreate {
 		cmc := &dto.WSC2CMessageData{}
 		err := json.Unmarshal(message, cmc)
 		if err == nil {
-			C2CMessageEventHandler(p, cmc)
+			C2CMessageEventHandler(h, p, cmc)
 		}
 	}
 	if p.Type == dto.EventC2CMsgReceive {
 		fmr := &dto.WSFriendMsgReveiceData{}
 		err := json.Unmarshal(message, fmr)
 		if err == nil {
-			C2CMsgReceiveHandle(p, fmr)
+			C2CMsgReceiveHandler(h, p, fmr)
 		}
 	}
 	if p.Type == dto.EventC2CMsgReject {
 		fmr := &dto.WSFriendMsgRejectData{}
 		err := json.Unmarshal(message, fmr)
 		if err == nil {
-			C2CMsgRejectHandle(p, fmr)
+			C2CMsgRejectHandler(h, p, fmr)
 		}
 	}
 	if p.Type == dto.EventFriendAdd {
 		fad := &dto.WSFriendAddData{}
 		err := json.Unmarshal(message, fad)
 		if err == nil {
-			FriendAddEventHandle(p, fad)
+			FriendAddEventHandler(h, p, fad)
 		}
 	}
 	if p.Type == dto.EventFriendDel {
 		fad := &dto.WSFriendDelData{}
 		err := json.Unmarshal(message, fad)
 		if err == nil {
-			FriendDelEventHandle(p, fad)
+			FriendDelEventHandler(h, p, fad)
 		}
 	}
 	if p.Type == dto.EventAtMessageCreate {
 		am := &dto.WSATMessageData{}
 		err := json.Unmarshal(message, am)
 		if err == nil {
-			ATMessageEventHandler(p, am)
+			ATMessageEventHandler(h, p, am)
 		}
 	}
 	if p.Type == dto.EventMessageCreate {
 		m := &dto.WSMessageData{}
 		err := json.Unmarshal(message, m)
 		if err == nil {
-			MessageEventHandler(p, m)
+			MessageEventHandler(h, p, m)
 		}
 	}
 	if p.Type == dto.EventInteractionCreate {
 		i := &dto.WSInteractionData{}
 		err := json.Unmarshal(message, i)
 		if err == nil {
-			InteractionEventHandler(p, i)
+			InteractionEventHandler(h, p, i)
 		}
 	}
 	if p.Type == dto.EventDirectMessageCreate {
 		i := &dto.WSDirectMessageData{}
 		err := json.Unmarshal(message, i)
 		if err == nil {
-			DirectMessageEventHandler(p, i)
+			DirectMessageEventHandler(h, p, i)
 		}
 	}
 	if p.Type == dto.EventMessageReactionAdd || p.Type == dto.EventMessageReactionRemove {
 		mr := &dto.WSMessageReactionData{}
 		err := json.Unmarshal(message, mr)
 		if err == nil {
-			MessageReactionEventHandler(p, mr)
+			MessageReactionEventHandler(h, p, mr)
 		}
 	}
 	if p.Type == dto.EventMessageAuditPass || p.Type == dto.EventMessageAuditReject {
 		mr := &dto.WSMessageAuditData{}
 		err := json.Unmarshal(message, mr)
 		if err == nil {
-			MessageAuditEventHandler(p, mr)
+			MessageAuditEventHandler(h, p, mr)
 		}
 	}
-	if p.Type == dto.EventForumThreadCreate || p.Type == dto.EventForumPostCreate ||  p.Type == dto.EventForumReplyCreate || p.Type == dto.EventForumThreadUpdate || p.Type == dto.EventForumPostDelete || p.Type == dto.EventForumThreadDelete || p.Type == dto.EventForumReplyDelete {
+	if p.Type == dto.EventForumThreadCreate || p.Type == dto.EventForumPostCreate || p.Type == dto.EventForumReplyCreate || p.Type == dto.EventForumThreadUpdate || p.Type == dto.EventForumPostDelete || p.Type == dto.EventForumThreadDelete || p.Type == dto.EventForumReplyDelete {
 		ft := &dto.WSForumAuditData{}
 		err := json.Unmarshal(message, ft)
 		if err == nil {
-			ForumAuditEventHandler(p, ft)
+			ForumAuditEventHandler(h, p, ft)
 		}
 	}
 	if p.Type == dto.EventGuildCreate || p.Type == dto.EventGuildUpdate || p.Type == dto.EventGuildDelete {
 		g := &dto.WSGuildData{}
 		err := json.Unmarshal(message, g)
 		if err == nil {
-			GuildEventHandler(p, g)
+			GuildEventHandler(h, p, g)
 		}
 	}
 	if p.Type == dto.EventChannelCreate || p.Type == dto.EventChannelUpdate || p.Type == dto.EventChannelDelete {
 		c := &dto.WSChannelData{}
 		err := json.Unmarshal(message, c)
 		if err == nil {
-			ChannelEventHandler(p, c)
+			ChannelEventHandler(h, p, c)
 		}
 	}
 	if p.Type == dto.EventGuildMemberAdd || p.Type == dto.EventGuildMemberUpdate || p.Type == dto.EventGuildMemberRemove {
 		gm := &dto.WSGuildMemberData{}
 		err := json.Unmarshal(message, gm)
 		if err == nil {
-			GuildMemberEventHandler(p, gm)
+			GuildMemberEventHandler(h, p, gm)
 		}
 	}
 }

@@ -1,5 +1,5 @@
 // Package botgo 是一个QQ频道机器人 sdk 的 golang 实现
-package bot
+package main
 
 import (
 	"github.com/2mf8/Go-QQ-Client/errs"

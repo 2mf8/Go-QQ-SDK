@@ -49,7 +49,55 @@ QQ频道机器人，官方 GOLANG SDK。
 
 ## 一、如何使用
 
-### 1.请求 openapi 接口，操作资源
+### 1.回调地址配置
+
+https://你的域名:端口/qqbot/你的应用appid
+
+示例 `https://fw1009zb5979.vicp.fun:443/qqbot/101981675`
+
+### 2.配置文件填写（支持多账号）
+
+默认配置文件为
+```
+{
+	"apps": {
+		"123456": {
+			"qq": 123456,
+			"app_id": 123456,
+			"token": "你的AppToken",
+			"app_secret": "你的AppSecret"
+		}
+	},
+	"port": 8443,
+	"cert_file": "ssl证书文件路径",
+	"cert_key": "ssl证书密钥"
+}
+```
+多账号
+
+```
+{
+	"apps": {
+		"5123456": {
+			"qq": 123456,
+			"app_id": 5123456,
+			"token": "你的AppToken",
+			"app_secret": "你的AppSecret"
+		},
+		"7234567": {
+			"qq": 234567,
+			"app_id": 7234567,
+			"token": "你的AppToken",
+			"app_secret": "你的AppSecret"
+		}
+	},
+	"port": 8443,
+	"cert_file": "ssl证书文件路径",
+	"cert_key": "ssl证书密钥"
+}
+```
+
+### 3.请求 openapi 接口，操作资源
 
 ```golang
 package main
@@ -62,22 +110,34 @@ import (
 	"time"
 
 	"github.com/2mf8/Go-QQ-Client/dto"
+	"github.com/2mf8/Go-QQ-Client/openapi"
 	"github.com/2mf8/Go-QQ-Client/token"
 	"github.com/2mf8/Go-QQ-Client/webhook"
+	log "github.com/sirupsen/logrus"
 )
+
+var Apis = make(map[string]openapi.OpenAPI, 0)
 
 func main() {
 	webhook.InitLog()
 	as := webhook.ReadSetting()
 	var ctx context.Context
-	token := token.BotToken(as.AppId, as.Token, string(token.TypeBot))
-	api := bot.NewOpenAPI(token).WithTimeout(3 * time.Second)
+	for i, v := range as.Apps {
+		token := token.BotToken(v.AppId, v.Token, string(token.TypeBot))
+		api := NewOpenAPI(token).WithTimeout(3 * time.Second)
+		Apis[i] = api
+	}
 	b, _ := json.Marshal(as)
 	fmt.Println("配置", string(b))
-	webhook.GroupAtMessageEventHandler = func(event *dto.WSPayload, data *dto.WSGroupATMessageData) error {
-		fmt.Println(data.GroupId, data.Content)
+	webhook.GroupAtMessageEventHandler = func(bot *webhook.BotHeaderInfo, event *dto.WSPayload, data *dto.WSGroupATMessageData) error {
+		fmt.Println(bot.XBotAppid, data.GroupId, data.Content)
+		if len(data.Attachments) > 0 {
+			log.Infof(`BotId(%s) GroupId(%s) UserId(%s) <- %s <image id="%s">`, bot.XBotAppid[0], data.GroupId, data.Author.UserId, data.Content, data.Attachments[0].URL)
+		} else {
+			log.Infof("BotId(%s) GroupId(%s) UserId(%s) <- %s", bot.XBotAppid[0], data.GroupId, data.Author.UserId, data.Content)
+		}
 		if strings.TrimSpace(data.Content) == "测试" {
-			api.PostGroupMessage(ctx, data.GroupId, &dto.GroupMessageToCreate{
+			Apis[bot.XBotAppid[0]].PostGroupMessage(ctx, data.GroupId, &dto.GroupMessageToCreate{
 				Content: "成功",
 				MsgID:   data.MsgId,
 				MsgType: 0,
@@ -85,36 +145,18 @@ func main() {
 		}
 		return nil
 	}
-	webhook.C2CMessageEventHandler = func(event *dto.WSPayload, data *dto.WSC2CMessageData) error {
+	webhook.C2CMessageEventHandler = func(bot *webhook.BotHeaderInfo, event *dto.WSPayload, data *dto.WSC2CMessageData) error {
 		b, _ := json.Marshal(event)
-		fmt.Println(string(b), data.Content)
+		fmt.Println(bot.XBotAppid, string(b), data.Content)
+		return nil
+	}
+	webhook.MessageEventHandler = func(bot *webhook.BotHeaderInfo, event *dto.WSPayload, data *dto.WSMessageData) error {
+		b, _ := json.Marshal(event)
+		fmt.Println(bot.XBotAppid, string(b), data.Content)
 		return nil
 	}
 	webhook.InitGin()
 	select {}
-}
-```
-
-### 2.使用默认 SessionManager 启动 websocket 连接，接收事件
-
-```golang
-func main() {
-    token := token.BotToken(conf.AppID, conf.Token, string(token.TypeBot))
-    api := bot.NewOpenAPI(token).WithTimeout(3 * time.Second)
-    ctx := context.Background()
-    ws, err := api.WS(ctx, nil, "")
-    if err != nil {
-        log.Printf("%+v, err:%v", ws, err)
-    }
-
-    // 监听哪类事件就需要实现哪类的 handler，定义：websocket/event_handler.go
-    var atMessage websocket.ATMessageEventHandler = func(event *dto.WSPayload, data *dto.WSATMessageData) error {
-        fmt.Println(event, data)
-        return nil
-    }
-    intent := websocket.RegisterHandlers(atMessage)
-    // 启动 session manager 进行 ws 连接的管理，如果接口返回需要启动多个 shard 的连接，这里也会自动启动多个
-    bot.NewSessionManager().Start(ws, token, &intent)
 }
 ```
 
