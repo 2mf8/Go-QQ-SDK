@@ -124,7 +124,7 @@ func main() {
 	var ctx context.Context
 	for i, v := range as.Apps {
 		token := token.BotToken(v.AppId, v.Token, string(token.TypeBot))
-		api := NewOpenAPI(token).WithTimeout(3 * time.Second)
+		api := bot.NewOpenAPI(token).WithTimeout(3 * time.Second)
 		Apis[i] = api
 	}
 	b, _ := json.Marshal(as)
