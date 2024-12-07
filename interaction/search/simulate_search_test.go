@@ -3,7 +3,7 @@ package search
 import (
 	"testing"
 
-	"github.com/2mf8/Go-QQ-Client/log"
+	"github.com/2mf8/Go-QQ-SDK/log"
 )
 
 func TestSimulateSearch(t *testing.T) {

@@ -1,7 +1,7 @@
 package websocket
 
 import (
-	"github.com/2mf8/Go-QQ-Client/dto"
+	"github.com/2mf8/Go-QQ-SDK/dto"
 )
 
 // WebSocket 需要实现的接口

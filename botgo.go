@@ -2,11 +2,11 @@
 package bot
 
 import (
-	"github.com/2mf8/Go-QQ-Client/errs"
-	"github.com/2mf8/Go-QQ-Client/log"
-	"github.com/2mf8/Go-QQ-Client/openapi"
-	"github.com/2mf8/Go-QQ-Client/token"
-	v1 "github.com/2mf8/Go-QQ-Client/openapi/v1"
+	"github.com/2mf8/Go-QQ-SDK/errs"
+	"github.com/2mf8/Go-QQ-SDK/log"
+	"github.com/2mf8/Go-QQ-SDK/openapi"
+	"github.com/2mf8/Go-QQ-SDK/token"
+	v1 "github.com/2mf8/Go-QQ-SDK/openapi/v1"
 )
 
 func init() {

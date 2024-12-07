@@ -5,9 +5,9 @@ import (
 	"runtime"
 	"syscall"
 
-	"github.com/2mf8/Go-QQ-Client/dto"
-	"github.com/2mf8/Go-QQ-Client/event"
-	"github.com/2mf8/Go-QQ-Client/log"
+	"github.com/2mf8/Go-QQ-SDK/dto"
+	"github.com/2mf8/Go-QQ-SDK/event"
+	"github.com/2mf8/Go-QQ-SDK/log"
 )
 
 var (

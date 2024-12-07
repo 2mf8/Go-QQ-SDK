@@ -3,7 +3,7 @@ package v1
 import (
 	"context"
 
-	"github.com/2mf8/Go-QQ-Client/dto"
+	"github.com/2mf8/Go-QQ-SDK/dto"
 )
 
 // WS 获取带分片 WSS 接入点

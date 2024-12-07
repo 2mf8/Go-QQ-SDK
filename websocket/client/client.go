@@ -13,12 +13,12 @@ import (
 
 	wss "github.com/gorilla/websocket" // 是一个流行的 websocket 客户端，服务端实现
 
-	"github.com/2mf8/Go-QQ-Client/dto"
-	"github.com/2mf8/Go-QQ-Client/errs"
-	"github.com/2mf8/Go-QQ-Client/event"
-	"github.com/2mf8/Go-QQ-Client/internal/proxy"
-	"github.com/2mf8/Go-QQ-Client/log"
-	"github.com/2mf8/Go-QQ-Client/websocket"
+	"github.com/2mf8/Go-QQ-SDK/dto"
+	"github.com/2mf8/Go-QQ-SDK/errs"
+	"github.com/2mf8/Go-QQ-SDK/event"
+	"github.com/2mf8/Go-QQ-SDK/internal/proxy"
+	"github.com/2mf8/Go-QQ-SDK/log"
+	"github.com/2mf8/Go-QQ-SDK/websocket"
 )
 
 // DefaultQueueSize 监听队列的缓冲长度

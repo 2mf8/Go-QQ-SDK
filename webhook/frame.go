@@ -5,7 +5,7 @@ import (
 	"strconv"
 	"sync/atomic"
 
-	"github.com/2mf8/Go-QQ-Client/openapi"
+	"github.com/2mf8/Go-QQ-SDK/openapi"
 	log "github.com/sirupsen/logrus"
 )
 

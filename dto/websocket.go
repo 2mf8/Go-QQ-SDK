@@ -3,7 +3,7 @@ package dto
 import (
 	"fmt"
 
-	"github.com/2mf8/Go-QQ-Client/token"
+	"github.com/2mf8/Go-QQ-SDK/token"
 )
 
 // WebsocketAP wss 接入点信息

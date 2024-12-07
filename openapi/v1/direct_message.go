@@ -3,8 +3,8 @@ package v1
 import (
 	"context"
 
-	"github.com/2mf8/Go-QQ-Client/dto"
-	"github.com/2mf8/Go-QQ-Client/openapi"
+	"github.com/2mf8/Go-QQ-SDK/dto"
+	"github.com/2mf8/Go-QQ-SDK/openapi"
 )
 
 // CreateDirectMessage 创建私信频道

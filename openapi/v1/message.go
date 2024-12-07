@@ -5,9 +5,9 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/2mf8/Go-QQ-Client/dto"
-	"github.com/2mf8/Go-QQ-Client/errs"
-	"github.com/2mf8/Go-QQ-Client/openapi"
+	"github.com/2mf8/Go-QQ-SDK/dto"
+	"github.com/2mf8/Go-QQ-SDK/errs"
+	"github.com/2mf8/Go-QQ-SDK/openapi"
 	"github.com/tidwall/gjson"
 )
 

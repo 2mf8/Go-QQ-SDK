@@ -3,7 +3,7 @@ package v1
 import (
 	"context"
 
-	"github.com/2mf8/Go-QQ-Client/dto"
+	"github.com/2mf8/Go-QQ-SDK/dto"
 )
 
 // GetMessageSetting 获取频道消息频率设置信息

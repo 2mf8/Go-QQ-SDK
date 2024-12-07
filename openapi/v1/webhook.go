@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 
-	"github.com/2mf8/Go-QQ-Client/dto"
+	"github.com/2mf8/Go-QQ-SDK/dto"
 )
 
 // CreateSession 创建一个新的 http 事件回调

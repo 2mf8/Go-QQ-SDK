@@ -4,8 +4,8 @@ import (
 	"context"
 	"time"
 
-	"github.com/2mf8/Go-QQ-Client/dto"
-	"github.com/2mf8/Go-QQ-Client/token"
+	"github.com/2mf8/Go-QQ-SDK/dto"
+	"github.com/2mf8/Go-QQ-SDK/token"
 )
 
 // RetractMessageOption 撤回消息可选参数

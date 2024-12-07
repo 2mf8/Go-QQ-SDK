@@ -9,9 +9,9 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/2mf8/Go-QQ-Client/dto"
-	"github.com/2mf8/Go-QQ-Client/interaction/signature"
-	"github.com/2mf8/Go-QQ-Client/log"
+	"github.com/2mf8/Go-QQ-SDK/dto"
+	"github.com/2mf8/Go-QQ-SDK/interaction/signature"
+	"github.com/2mf8/Go-QQ-SDK/log"
 )
 
 const maxRespBuffer = 65535

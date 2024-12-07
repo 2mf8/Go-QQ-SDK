@@ -1,6 +1,6 @@
 package webhook
 
-import "github.com/2mf8/Go-QQ-Client/dto"
+import "github.com/2mf8/Go-QQ-SDK/dto"
 
 // ReadyHandler 可以处理 ws 的 ready 事件
 var ReadyHandler func(bot *BotHeaderInfo, event *dto.WSPayload, data *dto.WSReadyData)

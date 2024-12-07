@@ -6,11 +6,11 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/2mf8/Go-QQ-Client/dto"
-	"github.com/2mf8/Go-QQ-Client/event"
-	"github.com/2mf8/Go-QQ-Client/interaction/signature"
-	"github.com/2mf8/Go-QQ-Client/log"
-	"github.com/2mf8/Go-QQ-Client/openapi"
+	"github.com/2mf8/Go-QQ-SDK/dto"
+	"github.com/2mf8/Go-QQ-SDK/event"
+	"github.com/2mf8/Go-QQ-SDK/interaction/signature"
+	"github.com/2mf8/Go-QQ-SDK/log"
+	"github.com/2mf8/Go-QQ-SDK/openapi"
 )
 
 type ack struct {

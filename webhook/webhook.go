@@ -17,8 +17,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/2mf8/Go-QQ-Client/dto"
-	"github.com/2mf8/Go-QQ-Client/openapi"
+	"github.com/2mf8/Go-QQ-SDK/dto"
+	"github.com/2mf8/Go-QQ-SDK/openapi"
 	"github.com/fanliao/go-promise"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"

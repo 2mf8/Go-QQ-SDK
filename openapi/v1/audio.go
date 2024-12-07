@@ -2,9 +2,9 @@ package v1
 
 import (
 	"context"
-	"github.com/2mf8/Go-QQ-Client/log"
+	"github.com/2mf8/Go-QQ-SDK/log"
 
-	"github.com/2mf8/Go-QQ-Client/dto"
+	"github.com/2mf8/Go-QQ-SDK/dto"
 )
 
 // PostAudio AudioAPI 接口实现

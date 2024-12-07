@@ -10,7 +10,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/2mf8/Go-QQ-Client/log"
+	"github.com/2mf8/Go-QQ-SDK/log"
 )
 
 const (

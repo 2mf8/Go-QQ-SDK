@@ -1,7 +1,7 @@
 package event
 
 import (
-	"github.com/2mf8/Go-QQ-Client/dto"
+	"github.com/2mf8/Go-QQ-SDK/dto"
 )
 
 // DefaultHandlers 默认的 handler 结构，管理所有支持的 handler 类型

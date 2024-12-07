@@ -7,7 +7,7 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/2mf8/Go-QQ-Client/dto"
+	"github.com/2mf8/Go-QQ-SDK/dto"
 )
 
 const domain = "api.sgroup.qq.com"

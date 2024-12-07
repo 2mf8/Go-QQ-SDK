@@ -1,4 +1,4 @@
-module github.com/2mf8/Go-QQ-Client
+module github.com/2mf8/Go-QQ-SDK
 
 go 1.22
 
