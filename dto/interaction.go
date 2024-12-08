@@ -13,6 +13,9 @@ type Interaction struct {
 	GroupOpenID       string           `json:"group_openid,omitempty"`   // 群 ID
 	GroupMemberOpenID string           `json:"group_member_openid,omitempty"`
 	Version           uint32           `json:"version,omitempty"` //	版本，默认为 1
+	ChatType          uint32           `json:"chat_type,omitempty"`
+	Scene             string           `json:"scene,omitempty"`
+	Timestamp         string           `json:"timestamp,omitempty"`
 }
 
 // InteractionType 互动类型

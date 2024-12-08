@@ -365,6 +365,7 @@ func (bot *Bot) ParseWHData(h *BotHeaderInfo, p *dto.WSPayload, message []byte) 
 		i := &dto.WSInteractionData{}
 		err := json.Unmarshal(message, i)
 		if err == nil {
+			i.ID = p.ID
 			InteractionEventHandler(h, p, i)
 		}
 	}
