@@ -79,7 +79,7 @@ func ReadSetting() Setting {
 	_, err = os.Stat(fmt.Sprintf("%s/setting.json", SettingPath))
 	if err != nil {
 		_ = os.WriteFile(fmt.Sprintf("%s/setting.json", SettingPath), []byte(output), 0644)
-		log.Warn("已生成配置文件 conf.toml 。")
+		log.Warn("已生成配置文件 setting.json 。")
 		log.Info("请修改 setting.json 后重新启动。")
 		log.Info("程序 10 秒后退出")
 		time.Sleep(time.Second * 10)
