@@ -75,7 +75,7 @@ type ValidationResponse struct {
 	Signature  string `json:"signature,omitempty"`
 }
 
-func handleValidation(c *gin.Context) {
+func HandleValidation(c *gin.Context) {
 	appid := c.Param("appid")
 	//if appid == "" {} else {}
 	fmt.Println(appid)
@@ -146,7 +146,7 @@ func InitGin() {
 	router.GET("/", func(ctx *gin.Context) {
 		ctx.String(http.StatusOK, "it works")
 	})
-	router.POST("/qqbot/:appid", handleValidation)
+	router.POST("/qqbot/:appid", HandleValidation)
 
 	iport := strconv.FormatInt(int64(AllSetting.Port), 10)
 	realPort, err := RunGin(router, ":"+iport)
