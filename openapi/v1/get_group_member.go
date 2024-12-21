@@ -15,7 +15,7 @@ func (o *openAPI) GetGroupMembers(ctx context.Context, groupId string, limit, st
 		SetResult(dto.GetGroupMembersResp{}).
 		SetPathParam("group_openid", groupId).
 		SetBody(req).
-		Post(o.getURL(groupRichMediaMessageUri))
+		Post(o.getURL(groupMembersGet))
 	if err != nil {
 		return nil, err
 	}
