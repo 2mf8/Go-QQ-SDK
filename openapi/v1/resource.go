@@ -26,6 +26,7 @@ const (
 	groupMessageUri            uri = "/v2/groups/{group_openid}/messages"
 	privateRichMediaMessageUri uri = "/v2/users/{openid}/files"
 	groupRichMediaMessageUri   uri = "/v2/groups/{group_openid}/files"
+	groupMembersGet            uri = "/v2/groups/{group_openid}/members"
 
 	guildURI            uri = "/guilds/{guild_id}"
 	guildMembersURI     uri = "/guilds/{guild_id}/members"
@@ -105,7 +106,7 @@ func (o *openAPI) getQQURL(endpoint uri) string {
 	return fmt.Sprintf("%s://%s%s", scheme, d, endpoint)
 }
 
-func GetAccessToken(appId string, clientsecret string) *dto.GetAccessTokenResp{
+func GetAccessToken(appId string, clientsecret string) *dto.GetAccessTokenResp {
 	d := getAppAccessTokenDomain
 	url := fmt.Sprintf("%s%s", d, getAppAccessTokenUri)
 	req := &dto.GetAccessTokenReq{
