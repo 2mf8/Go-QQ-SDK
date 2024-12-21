@@ -37,6 +37,7 @@ type OpenAPI interface {
 	WebhookAPI
 	InteractionAPI
 	MessageSettingAPI
+	GetGroupMembersAPI
 }
 
 // Base 基础能力接口
@@ -70,7 +71,7 @@ type MessageAPI interface {
 	PatchMessage(ctx context.Context,
 		channelID string, messageID string, msg *dto.MessageToCreate) (*dto.Message, error)
 	PostGroupMessage(ctx context.Context, groupId string, msg *dto.GroupMessageToCreate) (*dto.GroupMsgResp, error)
-	PostC2CMessage(ctx context.Context, userId string, msg *dto.C2CMessageToCreate)(*dto.C2CMsgResp, error)
+	PostC2CMessage(ctx context.Context, userId string, msg *dto.C2CMessageToCreate) (*dto.C2CMsgResp, error)
 	PostGroupRichMediaMessage(ctx context.Context, groupId string, msg *dto.GroupRichMediaMessageToCreate) (*dto.RichMediaMsgResp, error)
 	PostC2CRichMediaMessage(ctx context.Context, userId string, msg *dto.C2CRichMediaMessageToCreate) (*dto.RichMediaMsgResp, error)
 	RetractMessage(ctx context.Context, channelID, msgID string, options ...RetractMessageOption) error
@@ -252,4 +253,8 @@ type WebhookAPI interface {
 // MessageSettingAPI 频道消息设置接口
 type MessageSettingAPI interface {
 	GetMessageSetting(ctx context.Context, guildID string) (*dto.MessageSetting, error)
+}
+
+type GetGroupMembersAPI interface {
+	GetGroupMembers(ctx context.Context, groupId string, limit, startIndex int) (*dto.GetGroupMembersResp, error)
 }
