@@ -151,6 +151,36 @@ func (o *openAPI) RetractMessage(ctx context.Context,
 	return err
 }
 
+// DelC2CMessage 撤回C2C机器人2分钟内发出的消息
+func (o *openAPI) DelC2CMessage(ctx context.Context,
+	userID, msgID string, options ...openapi.RetractMessageOption) error {
+	request := o.request(ctx).
+		SetPathParam("openid", userID).
+		SetPathParam("message_id", string(msgID))
+	for _, option := range options {
+		if option == openapi.RetractMessageOptionHidetip {
+			request = request.SetQueryParam("hidetip", "true")
+		}
+	}
+	_, err := request.Delete(o.getURL(privateBotMessageDelUri))
+	return err
+}
+
+// DelGroupBotMessage 撤回机器人2分钟内发出的群聊消息
+func (o *openAPI) DelGroupBotMessage(ctx context.Context,
+	groupID, msgID string, options ...openapi.RetractMessageOption) error {
+	request := o.request(ctx).
+		SetPathParam("group_openid", groupID).
+		SetPathParam("message_id", string(msgID))
+	for _, option := range options {
+		if option == openapi.RetractMessageOptionHidetip {
+			request = request.SetQueryParam("hidetip", "true")
+		}
+	}
+	_, err := request.Delete(o.getURL(groupBotMessageDelUri))
+	return err
+}
+
 // PostSettingGuide 发送设置引导消息, atUserID为要at的用户
 func (o *openAPI) PostSettingGuide(ctx context.Context,
 	channelID string, atUserIDs []string) (*dto.Message, error) {

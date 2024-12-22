@@ -27,6 +27,8 @@ const (
 	privateRichMediaMessageUri uri = "/v2/users/{openid}/files"
 	groupRichMediaMessageUri   uri = "/v2/groups/{group_openid}/files"
 	groupMembersGet            uri = "/v2/groups/{group_openid}/members"
+	groupBotMessageDelUri      uri = "/v2/groups/{group_openid}/messages/{message_id}"
+	privateBotMessageDelUri    uri = "/v2/users/{openid}/messages/{message_id}"
 
 	guildURI            uri = "/guilds/{guild_id}"
 	guildMembersURI     uri = "/guilds/{guild_id}/members"
