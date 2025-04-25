@@ -4,6 +4,12 @@ QQ频道机器人，官方 GOLANG SDK。
 
 [![Go Reference](https://pkg.go.dev/badge/github.com/2mf8/Go-QQ-SDK.svg)](https://pkg.go.dev/github.com/2mf8/Go-QQ-SDK)
 
+# 已迁移至 [Better-Bot-Go](https://github.com/2mf8/Better-Bot-Go)
+
+## 可以基于快速开发包快速开发机器人。
+
+快速开发包下载 [GoSDK](https://2mf8.cn/GoSDK.zip)
+
 # [QQ交流群 677742758](https://qm.qq.com/q/okWktIaAqk)
 
 <details>
